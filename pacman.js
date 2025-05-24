@@ -404,3 +404,17 @@ class PacmanGame {
         }
     }
 }
+
+    setDifficulty(level) {
+        switch(level) {
+            case 'easy':
+                this.ghostSpeed = 1.2;
+                break;
+            case 'hard':
+                this.ghostSpeed = 2.2;
+                break;
+            default:
+                this.ghostSpeed = 1.7;
+        }
+    }
+}

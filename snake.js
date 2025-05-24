@@ -153,4 +153,17 @@ class SnakeGame {
                 break;
         }
     }
+
+    setDifficulty(level) {
+        switch(level) {
+            case 'easy':
+                this.gameSpeed = 180;
+                break;
+            case 'hard':
+                this.gameSpeed = 80;
+                break;
+            default:
+                this.gameSpeed = 120;
+        }
+    }
 }

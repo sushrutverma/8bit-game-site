@@ -260,4 +260,20 @@ class SpaceInvadersGame {
             this.player.shooting = false;
         }
     }
+
+    setDifficulty(level) {
+        switch(level) {
+            case 'easy':
+                this.alienSpeed = 0.7;
+                this.bulletSpeed = 5;
+                break;
+            case 'hard':
+                this.alienSpeed = 1.7;
+                this.bulletSpeed = 9;
+                break;
+            default:
+                this.alienSpeed = 1.2;
+                this.bulletSpeed = 7;
+        }
+    }
 }

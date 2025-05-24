@@ -100,6 +100,139 @@ function loadGame(gameType) {
     showTutorial(gameType);
 }
 
+// --- Virtual Controller and Difficulty Selector Logic ---
+
+function createVirtualController(gameType) {
+    const container = document.getElementById('virtual-controller');
+    container.innerHTML = '';
+    container.style.display = 'none';
+    if (!/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+        return;
+    }
+    let btns = [];
+    if (gameType === 'snake' || gameType === 'tetris' || gameType === 'pacman') {
+        btns = [
+            { label: '◀', action: 'left' },
+            { label: '▲', action: 'up' },
+            { label: '▼', action: 'down' },
+            { label: '▶', action: 'right' }
+        ];
+    } else if (gameType === 'pong' || gameType === 'breakout') {
+        btns = [
+            { label: '◀', action: 'left' },
+            { label: '▶', action: 'right' }
+        ];
+    } else if (gameType === 'spaceinvaders') {
+        btns = [
+            { label: '◀', action: 'left' },
+            { label: '▶', action: 'right' },
+            { label: '⎋', action: 'shoot' }
+        ];
+    }
+    btns.forEach(btn => {
+        const el = document.createElement('button');
+        el.className = 'virtual-btn';
+        el.innerText = btn.label;
+        el.addEventListener('touchstart', e => {
+            e.preventDefault();
+            triggerVirtualInput(btn.action, true);
+        });
+        el.addEventListener('touchend', e => {
+            e.preventDefault();
+            triggerVirtualInput(btn.action, false);
+        });
+        container.appendChild(el);
+    });
+    if (btns.length > 0) {
+        container.style.display = 'flex';
+    }
+}
+
+function triggerVirtualInput(action, pressed) {
+    if (!window.currentGame) return;
+    let key = null;
+    switch(action) {
+        case 'left': key = 'ArrowLeft'; break;
+        case 'right': key = 'ArrowRight'; break;
+        case 'up': key = 'ArrowUp'; break;
+        case 'down': key = 'ArrowDown'; break;
+        case 'shoot': key = ' '; break;
+    }
+    if (key) {
+        if (pressed) {
+            window.currentGame.handleInput && window.currentGame.handleInput({ key });
+        } else if (window.currentGame.handleKeyUp) {
+            window.currentGame.handleKeyUp({ key });
+        }
+    }
+}
+
+function createDifficultySelector(gameType, onChange) {
+    const container = document.getElementById('difficulty-selector');
+    container.innerHTML = '';
+    const levels = ['Easy', 'Medium', 'Hard'];
+    levels.forEach(level => {
+        const btn = document.createElement('button');
+        btn.className = 'difficulty-btn';
+        btn.innerText = level;
+        btn.onclick = () => {
+            document.querySelectorAll('.difficulty-btn').forEach(b => b.classList.remove('selected'));
+            btn.classList.add('selected');
+            onChange(level.toLowerCase());
+        };
+        container.appendChild(btn);
+    });
+    container.style.display = 'flex';
+    // Default to Medium
+    container.querySelector('.difficulty-btn:nth-child(2)').classList.add('selected');
+}
+
+function hideDifficultySelector() {
+    document.getElementById('difficulty-selector').style.display = 'none';
+}
+
+// --- Patch initializeGame to use overlays ---
+const originalInitializeGame = initializeGame;
+window.currentDifficulty = 'medium';
+window.currentGameType = null;
+window.currentGame = null;
+
+initializeGame = function(gameType) {
+    window.currentGameType = gameType;
+    createVirtualController(gameType);
+    createDifficultySelector(gameType, function(level) {
+        window.currentDifficulty = level;
+        if (window.currentGame && window.currentGame.setDifficulty) {
+            window.currentGame.setDifficulty(level);
+        }
+    });
+    originalInitializeGame.apply(this, arguments);
+    window.currentGame = window.gameInstance;
+    if (window.currentGame && window.currentGame.setDifficulty) {
+        window.currentGame.setDifficulty(window.currentDifficulty);
+    }
+};
+
+// Hide overlays on menu
+function showMenuOverlays(show) {
+    document.getElementById('virtual-controller').style.display = show ? 'none' : '';
+    document.getElementById('difficulty-selector').style.display = show ? 'none' : '';
+}
+
+// Patch returnToMenu to hide overlays
+const originalReturnToMenu = returnToMenu;
+returnToMenu = function() {
+    showMenuOverlays(true);
+    originalReturnToMenu.apply(this, arguments);
+};
+
+// Patch loadGame to show overlays
+const originalLoadGame = loadGame;
+loadGame = function(gameType) {
+    showMenuOverlays(false);
+    originalLoadGame.apply(this, arguments);
+};
+
 function initializeGame(gameType) {
     const gameContainer = document.getElementById('game-container');
     const gameSelection = document.querySelector('.game-selection');

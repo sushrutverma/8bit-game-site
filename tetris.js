@@ -182,4 +182,17 @@ class TetrisGame {
         }
         this.draw();
     }
+
+    setDifficulty(level) {
+        switch(level) {
+            case 'easy':
+                this.gameSpeed = 800;
+                break;
+            case 'hard':
+                this.gameSpeed = 300;
+                break;
+            default:
+                this.gameSpeed = 500;
+        }
+    }
 }

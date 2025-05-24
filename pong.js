@@ -208,4 +208,20 @@ class PongGame {
             this.aiSpeedMultiplier += 0.05;
         }
     }
+
+    setDifficulty(level) {
+        switch(level) {
+            case 'easy':
+                this.ballSpeed = 4;
+                this.paddleSpeed = 6;
+                break;
+            case 'hard':
+                this.ballSpeed = 8;
+                this.paddleSpeed = 10;
+                break;
+            default:
+                this.ballSpeed = 6;
+                this.paddleSpeed = 8;
+        }
+    }
 }

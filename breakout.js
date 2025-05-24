@@ -185,4 +185,19 @@ class BreakoutGame {
             this.paddle.x -= paddleSpeed;
         }
     }
+    setDifficulty(level) {
+        switch(level) {
+            case 'easy':
+                this.ballSpeed = 3;
+                this.paddleSpeed = 7;
+                break;
+            case 'hard':
+                this.ballSpeed = 7;
+                this.paddleSpeed = 11;
+                break;
+            default:
+                this.ballSpeed = 5;
+                this.paddleSpeed = 9;
+        }
+    }
 }
