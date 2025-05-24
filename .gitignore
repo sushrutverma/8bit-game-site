@@ -1,0 +1,39 @@
+# System Files
+.DS_Store
+Thumbs.db
+
+# IDE/Editor Folders
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+
+# Logs
+*.log
+npm-debug.log*
+
+# Dependencies
+node_modules/
+
+# Environment Files
+.env
+.env.local
+.env.*.local
+
+# Build Output
+dist/
+build/
+
+# Cache
+.cache/
+.temp/
+
+# Local Development
+*.local
+
+# Debug Files
+debug/
+
+# Temporary Files
+*.tmp
+*.temp

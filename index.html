@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>8-Bit Arcade</title>
+    <link rel="stylesheet" href="main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1 class="retro-text">8-Bit Arcade</h1>
+        </header>
+        <main>
+            <div class="game-selection">
+                <div class="game-card" onclick="loadGame('snake')">
+                    <h2>Snake</h2>
+                    <p>Classic snake game. Eat food, grow longer!</p>
+                </div>
+                <div class="game-card" onclick="loadGame('pong')">
+                    <h2>Pong</h2>
+                    <p>The original classic! Play against AI.</p>
+                </div>
+                <div class="game-card" onclick="loadGame('tetris')">
+                    <h2>Tetris</h2>
+                    <p>Stack and clear lines in this timeless puzzle!</p>
+                </div>
+                <div class="game-card" onclick="loadGame('breakout')">
+                    <h2>Breakout</h2>
+                    <p>Break all bricks to win! Don't miss the ball!</p>
+                </div>
+                <div class="game-card" onclick="loadGame('spaceinvaders')">
+                    <h2>Space Invaders</h2>
+                    <p>Defend Earth from alien invasion!</p>
+                </div>
+                <div class="game-card" onclick="loadGame('pacman')">
+                    <h2>Pac-Man</h2>
+                    <p>Eat all dots, avoid ghosts... or chase them!</p>
+                </div>
+            </div>
+            <div id="game-container" class="hidden">
+                <canvas id="gameCanvas"></canvas>
+                <div class="controls">
+                    <button onclick="returnToMenu()" class="retro-button">Back to Menu</button>
+                    <button onclick="restartGame()" class="retro-button">Restart</button>
+                </div>
+            </div>
+        </main>
+        <footer>
+            <p>Created with ❤️ by Sushrut Verma | Use arrow keys to play</p>
+        </footer>
+    </div>
+    <script src="snake.js"></script>
+    <script src="pong.js"></script>
+    <script src="tetris.js"></script>
+    <script src="breakout.js"></script>
+    <script src="spaceinvaders.js"></script>
+    <script src="pacman.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>
