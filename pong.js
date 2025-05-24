@@ -7,6 +7,13 @@ class PongGame {
         this.ballSize = 10;
         this.paddleSpeed = 5;
         this.ballSpeed = 4;
+        this.level = 1;
+        this.maxLevel = 5;
+        this.aiSpeedMultiplier = 0.8;
+        this.playerDirection = 0;
+        this.isTouch = false;
+        this.touchStartY = 0;
+        this.touchCurrentY = 0;
         
         // Initialize game objects
         this.playerPaddle = {
@@ -50,10 +57,25 @@ class PongGame {
     }
 
     update() {
+        this.movePlayer();
         this.moveBall();
         this.moveAI();
         this.checkCollisions();
         this.draw();
+    }
+
+    movePlayer() {
+        if (this.playerDirection !== 0) {
+            this.playerPaddle.y += this.playerDirection * this.paddleSpeed;
+            this.playerPaddle.y = Math.max(0, Math.min(this.canvas.height - this.paddleHeight, this.playerPaddle.y));
+        }
+        // Touch movement
+        if (this.isTouch) {
+            let delta = this.touchCurrentY - this.touchStartY;
+            this.playerPaddle.y += delta * 0.2;
+            this.playerPaddle.y = Math.max(0, Math.min(this.canvas.height - this.paddleHeight, this.playerPaddle.y));
+            this.touchStartY = this.touchCurrentY;
+        }
     }
 
     moveBall() {
@@ -69,6 +91,7 @@ class PongGame {
         if (this.ball.x <= 0) {
             this.aiPaddle.score++;
             this.ball = this.resetBall();
+            this.increaseLevel();
         } else if (this.ball.x >= this.canvas.width) {
             this.playerPaddle.score++;
             this.ball = this.resetBall();
@@ -82,9 +105,9 @@ class PongGame {
         // Add some delay and imperfection to AI
         if (Math.abs(paddleCenter - ballCenter) > this.paddleHeight/6) {
             if (paddleCenter < ballCenter) {
-                this.aiPaddle.y += this.paddleSpeed * 0.8;
+                this.aiPaddle.y += this.paddleSpeed * this.aiSpeedMultiplier;
             } else {
-                this.aiPaddle.y -= this.paddleSpeed * 0.8;
+                this.aiPaddle.y -= this.paddleSpeed * this.aiSpeedMultiplier;
             }
         }
 
@@ -135,21 +158,54 @@ class PongGame {
         // Draw ball
         this.ctx.fillRect(this.ball.x - this.ballSize/2, this.ball.y - this.ballSize/2, this.ballSize, this.ballSize);
 
-        // Draw scores
+        // Draw scores and level
         this.ctx.font = '40px "Press Start 2P"';
         this.ctx.textAlign = 'center';
         this.ctx.fillText(this.playerPaddle.score.toString(), this.canvas.width/4, 60);
         this.ctx.fillText(this.aiPaddle.score.toString(), 3*this.canvas.width/4, 60);
+        
+        // Draw level
+        this.ctx.font = '20px "Press Start 2P"';
+        this.ctx.fillText(`Level ${this.level}`, this.canvas.width/2, 30);
     }
 
     handleInput(event) {
-        switch (event.key) {
-            case 'ArrowUp':
-                this.playerPaddle.y = Math.max(0, this.playerPaddle.y - this.paddleSpeed);
-                break;
-            case 'ArrowDown':
-                this.playerPaddle.y = Math.min(this.canvas.height - this.paddleHeight, this.playerPaddle.y + this.paddleSpeed);
-                break;
+        if (event.type === 'keydown') {
+            if (event.key === 'ArrowUp') {
+                event.preventDefault();
+                this.playerDirection = -1;
+            } else if (event.key === 'ArrowDown') {
+                event.preventDefault();
+                this.playerDirection = 1;
+            }
+        } else if (event.type === 'keyup') {
+            if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+                event.preventDefault();
+                this.playerDirection = 0;
+            }
+        }
+    }
+
+    handleTouchStart(e) {
+        this.isTouch = true;
+        this.touchStartY = e.touches[0].clientY;
+        this.touchCurrentY = e.touches[0].clientY;
+    }
+
+    handleTouchMove(e) {
+        this.touchCurrentY = e.touches[0].clientY;
+    }
+
+    handleTouchEnd(e) {
+        this.isTouch = false;
+    }
+
+    increaseLevel() {
+        if (this.level < this.maxLevel) {
+            this.level++;
+            this.ballSpeed += 1;
+            this.paddleSpeed += 0.5;
+            this.aiSpeedMultiplier += 0.05;
         }
     }
 }

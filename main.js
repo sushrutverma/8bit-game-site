@@ -127,7 +127,12 @@ function initializeGame(gameType) {
             break;
         case 'pong':
             currentGame = new PongGame(canvas, ctx);
-            document.addEventListener('keydown', (e) => currentGame.handleInput(e));
+            document.addEventListener('keydown', currentGame.handleInput.bind(currentGame));
+            document.addEventListener('keyup', currentGame.handleInput.bind(currentGame));
+            // Touch controls for mobile
+            canvas.addEventListener('touchstart', function(e) { currentGame.handleTouchStart(e); }, {passive: false});
+            canvas.addEventListener('touchmove', function(e) { currentGame.handleTouchMove(e); }, {passive: false});
+            canvas.addEventListener('touchend', function(e) { currentGame.handleTouchEnd(e); }, {passive: false});
             break;
         case 'tetris':
             currentGame = new TetrisGame(canvas, ctx);
